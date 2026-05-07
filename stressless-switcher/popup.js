@@ -39,8 +39,20 @@ const LOCALE_RE = new RegExp(`(stressless\\.com\\/)(${ALL_SEGMENTS.join('|')})(?
 const LOCALE_MAP = Object.fromEntries(LOCALES.map(l => [l.code, l]));
 
 function detectLocale(url) {
+  if (!url) return null;
   const m = url.match(LOCALE_RE);
   return m ? m[2] : null;
+}
+
+// When opened as a standalone fallback window, background.js passes the
+// original tab's URL and ID as query params so we target the right tab.
+const _p = new URLSearchParams(typeof location !== 'undefined' ? location.search : '');
+const _paramTabUrl = _p.get('tabUrl') || '';
+const _paramTabId  = _p.get('tabId')  ? Number(_p.get('tabId')) : null;
+
+function resolveActiveTab(cb) {
+  if (_paramTabUrl) { cb({ url: _paramTabUrl, id: _paramTabId }); return; }
+  chrome.tabs.query({ active: true, currentWindow: true }, tabs => cb(tabs[0] || {}));
 }
 
 function switchUrl(url, newCode) {
@@ -64,12 +76,12 @@ function saveFavourites(favs, cb) {
 
 // ── Navigate to locale ──
 function navigateTo(code) {
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    const url = tabs[0].url;
+  resolveActiveTab(tab => {
+    const url = tab.url || '';
     const newUrl = isStressless(url)
       ? switchUrl(url, code)
       : `https://www.stressless.com/${code}/`;
-    chrome.tabs.update(tabs[0].id, { url: newUrl });
+    if (tab.id != null) chrome.tabs.update(tab.id, { url: newUrl });
     window.close();
   });
 }
@@ -250,8 +262,8 @@ function renderManageTab(favs) {
 }
 
 // ── Main init ──
-chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-  const url = tabs[0].url;
+resolveActiveTab(tab => {
+  const url = tab.url || '';
 
   const activeCode = detectLocale(url);
   const activeLocale = LOCALE_MAP[activeCode];
