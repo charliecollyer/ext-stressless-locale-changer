@@ -15,11 +15,24 @@ A Chrome extension for quickly switching locales on stressless.com and shop.stre
 | Action | Shortcut / How |
 |---|---|
 | Open the switcher | `Alt + Shift + L` (customisable) |
+| Open the switcher (system-wide) | Global shortcut — opt in at `chrome://extensions/shortcuts` |
 | Filter locales | Just start typing a country name or code |
 | Cycle through results | `Tab` / `Shift+Tab` or `↑↓` |
 | Go to locale | `Enter` or click any row |
 | Jump to favourite | `1`–`9` (when search box is empty) |
 | Close without switching | `Esc` |
+
+### Global shortcut (optional)
+
+The extension includes a second shortcut — **"Open Stressless Locale Switcher (Global)"** — that works even when Chrome is not the focused window. It has no default key binding so it won't interfere with anything unless you opt in.
+
+To enable it:
+
+1. Go to `chrome://extensions/shortcuts`.
+2. Find "Open Stressless Locale Switcher (Global)" under Stressless Locale Switcher.
+3. Click the input field, press your preferred key combination, and select **Global** from the dropdown.
+
+When triggered from outside Chrome, a small popup window opens. Pick a locale and Chrome will come to the foreground with the page already switched.
 
 ## Favourites & Ordering
 
@@ -33,5 +46,5 @@ Star your most-used locales to build a personal shortlist and jump to them insta
 ## Changing the Keyboard Shortcut
 
 1. Open the **Manage** tab and click the link to `chrome://extensions/shortcuts`.
-2. Find "Stressless Locale Switcher" and click the pencil icon next to "Open Stressless Locale Switcher".
+2. Find "Stressless Locale Switcher" and click the input field next to the shortcut you want to change.
 3. Press your preferred key combination to save it.
