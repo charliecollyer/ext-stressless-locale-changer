@@ -35,7 +35,7 @@ const LOCALES = [
 
 const LOCALE_CODES = LOCALES.map(l => l.code);
 const ALL_SEGMENTS = ['global', ...LOCALE_CODES.filter(c => c !== 'global')];
-const LOCALE_RE = new RegExp(`(stressless\\.com\\/)(${ALL_SEGMENTS.join('|')})(?:\\/|$)`);
+const LOCALE_RE = new RegExp(`(stressless\\.com\\/)(${ALL_SEGMENTS.join('|')})(?:\\/|(?=[?#]|$))`);
 const LOCALE_MAP = Object.fromEntries(LOCALES.map(l => [l.code, l]));
 
 function detectLocale(url) {
@@ -65,7 +65,10 @@ function saveFavourites(favs, cb) {
 // ── Navigate to locale ──
 function navigateTo(code) {
   chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    const newUrl = switchUrl(tabs[0].url, code);
+    const url = tabs[0].url;
+    const newUrl = isStressless(url)
+      ? switchUrl(url, code)
+      : `https://www.stressless.com/${code}/`;
     chrome.tabs.update(tabs[0].id, { url: newUrl });
     window.close();
   });
@@ -249,13 +252,6 @@ function renderManageTab(favs) {
 // ── Main init ──
 chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
   const url = tabs[0].url;
-
-  if (!isStressless(url)) {
-    document.getElementById('not-on-site').style.display = 'block';
-    document.getElementById('view-switch').style.display = 'none';
-    document.getElementById('view-manage').style.display = 'none';
-    return;
-  }
 
   const activeCode = detectLocale(url);
   const activeLocale = LOCALE_MAP[activeCode];

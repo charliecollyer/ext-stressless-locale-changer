@@ -76,9 +76,32 @@ describe('switchUrl', () => {
     expect(switchUrl('https://www.stressless.com/en/?ref=nav', 'de-de'))
       .toBe('https://www.stressless.com/de-de/?ref=nav');
   });
+  test('replaces locale when query string has no preceding slash', () => {
+    expect(switchUrl('https://www.stressless.com/en-gb?redir=1', 'de-de'))
+      .toBe('https://www.stressless.com/de-de/?redir=1');
+  });
+  test('replaces locale when hash has no preceding slash', () => {
+    expect(switchUrl('https://www.stressless.com/en-gb#section', 'de-de'))
+      .toBe('https://www.stressless.com/de-de/#section');
+  });
   test('handles shop subdomain', () => {
     expect(switchUrl('https://shop.stressless.com/en-gb/cart', 'fr-fr'))
       .toBe('https://shop.stressless.com/fr-fr/cart');
+  });
+});
+
+// ── navigateTo URL logic ──────────────────────────────────────────────────────
+
+describe('navigateTo URL logic', () => {
+  test('uses switchUrl when on stressless', () => {
+    const url = 'https://www.stressless.com/en/sofas';
+    const result = isStressless(url) ? switchUrl(url, 'de-de') : `https://www.stressless.com/de-de/`;
+    expect(result).toBe('https://www.stressless.com/de-de/sofas');
+  });
+  test('uses homepage when not on stressless', () => {
+    const url = 'https://www.google.com';
+    const result = isStressless(url) ? switchUrl(url, 'de-de') : `https://www.stressless.com/de-de/`;
+    expect(result).toBe('https://www.stressless.com/de-de/');
   });
 });
 
