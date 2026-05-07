@@ -377,3 +377,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     window.close();
   });
 });
+
+if (typeof module !== 'undefined') {
+  module.exports = { detectLocale, switchUrl, isStressless, LOCALES, LOCALE_MAP, LOCALE_RE };
+}
