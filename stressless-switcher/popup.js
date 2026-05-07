@@ -47,8 +47,9 @@ function detectLocale(url) {
 // When opened as a standalone fallback window, background.js passes the
 // original tab's URL and ID as query params so we target the right tab.
 const _p = new URLSearchParams(typeof location !== 'undefined' ? location.search : '');
-const _paramTabUrl = _p.get('tabUrl') || '';
-const _paramTabId  = _p.get('tabId')  ? Number(_p.get('tabId')) : null;
+const _paramTabUrl = _p.get('tabUrl')   || '';
+const _paramTabId  = _p.get('tabId')    ? Number(_p.get('tabId'))    : null;
+const _paramWinId  = _p.get('windowId') ? Number(_p.get('windowId')) : null;
 
 function resolveActiveTab(cb) {
   if (_paramTabUrl) { cb({ url: _paramTabUrl, id: _paramTabId }); return; }
@@ -78,10 +79,13 @@ function saveFavourites(favs, cb) {
 function navigateTo(code) {
   resolveActiveTab(tab => {
     const url = tab.url || '';
-    const newUrl = isStressless(url)
-      ? switchUrl(url, code)
-      : `https://www.stressless.com/${code}/`;
-    if (tab.id != null) chrome.tabs.update(tab.id, { url: newUrl });
+    if (isStressless(url)) {
+      if (tab.id != null) chrome.tabs.update(tab.id, { url: switchUrl(url, code) });
+      // In standalone mode the original window is in the background — bring it forward.
+      if (_paramWinId != null) chrome.windows.update(_paramWinId, { focused: true, state: 'normal' });
+    } else {
+      chrome.tabs.create({ url: `https://www.stressless.com/${code}/` });
+    }
     window.close();
   });
 }

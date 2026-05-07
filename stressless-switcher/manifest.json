@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Stressless Locale Switcher",
-  "version": "4.2",
+  "version": "4.3",
   "description": "Quickly switch between Stressless country/language variants",
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage", "windows"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

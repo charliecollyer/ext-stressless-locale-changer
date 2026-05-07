@@ -10,6 +10,7 @@ chrome.commands.onCommand.addListener(async (command) => {
     const params = new URLSearchParams();
     if (tab?.url) params.set("tabUrl", tab.url);
     if (tab?.id != null) params.set("tabId", String(tab.id));
+    if (tab?.windowId != null) params.set("windowId", String(tab.windowId));
     const qs = params.toString();
     await chrome.windows.create({
       url: chrome.runtime.getURL("popup.html") + (qs ? "?" + qs : ""),
