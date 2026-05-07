@@ -2,6 +2,8 @@
 
 A Chrome extension for quickly switching locales on stressless.com and shop.stressless.com (31 locales including /global).
 
+<img width="317" height="575" alt="CleanShot 2026-05-07 at 14 44 49" src="https://github.com/user-attachments/assets/ef4e5229-1b2b-43cb-80b4-8cdd5f8c6b92" />
+
 ## Installation
 
 1. **Download & unzip** — Save the `stressless-switcher.zip` file and unzip it to a permanent folder on your computer.
