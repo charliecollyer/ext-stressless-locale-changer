@@ -350,15 +350,17 @@ resolveActiveTab(tab => {
     }
 
     // Shift+1–9 selects Nth search result when search has text
-    const digit = parseInt(e.key);
-    if (e.shiftKey && !isNaN(digit) && digit >= 1 && digit <= 9 && searchEl.value !== '') {
+    // e.key is '!','@','#'… when shift is held, so use e.code instead
+    const codeDigit = e.code.startsWith('Digit') ? parseInt(e.code.slice(5)) : NaN;
+    if (e.shiftKey && !isNaN(codeDigit) && codeDigit >= 1 && codeDigit <= 9 && searchEl.value !== '') {
       e.preventDefault();
-      const target = items[digit - 1];
+      const target = items[codeDigit - 1];
       if (target) navigateTo(target.dataset.code);
       return;
     }
 
     // 1–9 picks favourites when search is empty
+    const digit = parseInt(e.key);
     if (!isNaN(digit) && digit >= 1 && digit <= 9 && searchEl.value === '') {
       loadFavourites(favs => {
         const code = favs[digit - 1];
