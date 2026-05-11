@@ -172,6 +172,7 @@
       text-align: center;
     }
     .locale-item.active .shortcut-badge { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+    .shortcut-badge.search-badge { background: #1a2a3a; border-color: #3a6ea8; color: #7ab3e0; min-width: 24px; }
 
     .locale-code { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text); width: 58px; flex-shrink: 0; }
     .locale-item.active .locale-code { color: var(--accent); }
@@ -297,7 +298,7 @@
     <span class="current-name" id="current-name"></span>
   </div>
   <div class="search-wrap">
-    <input class="search-input" id="search" type="text" placeholder="Filter or press 1–9 for favourites…" autocomplete="off" />
+    <input class="search-input" id="search" type="text" placeholder="Filter… (⇧1–9 to pick result, 1–9 for favs)" autocomplete="off" />
   </div>
   <div class="scroll-area" id="locale-list"></div>
   <div class="no-results" id="no-results">No locales match</div>

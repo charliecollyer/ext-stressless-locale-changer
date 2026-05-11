@@ -123,6 +123,7 @@ function renderSwitchTab(activeCode, favs, filter) {
     groups[l.group].push(l);
   }
 
+  let searchResultIndex = 0;
   for (const [groupName, items] of Object.entries(groups)) {
     const label = document.createElement('div');
     label.className = 'group-label';
@@ -130,9 +131,9 @@ function renderSwitchTab(activeCode, favs, filter) {
     container.appendChild(label);
 
     for (const locale of items) {
-      const favIdx = favs.indexOf(locale.code);
-      const shortcut = (!q && favIdx !== -1) ? null : null; // badges only in fav section
-      const item = makeLocaleItem(locale, activeCode, favs, null);
+      searchResultIndex++;
+      const shiftBadge = (q && searchResultIndex <= 9) ? searchResultIndex : null;
+      const item = makeLocaleItem(locale, activeCode, favs, shiftBadge, !!q);
       container.appendChild(item);
       visibleCount++;
     }
@@ -141,7 +142,7 @@ function renderSwitchTab(activeCode, favs, filter) {
   noResults.style.display = visibleCount === 0 ? 'block' : 'none';
 }
 
-function makeLocaleItem(locale, activeCode, favs, shortcutNum) {
+function makeLocaleItem(locale, activeCode, favs, shortcutNum, isSearchBadge = false) {
   const isFav = favs.includes(locale.code);
   const isActive = locale.code === activeCode;
 
@@ -152,8 +153,9 @@ function makeLocaleItem(locale, activeCode, favs, shortcutNum) {
   // shortcut badge (only in favourites section, 1-indexed)
   const badge = document.createElement('span');
   badge.className = 'shortcut-badge';
-  badge.textContent = shortcutNum !== null ? shortcutNum : '';
+  badge.textContent = shortcutNum !== null ? (isSearchBadge ? `⇧${shortcutNum}` : shortcutNum) : '';
   badge.style.visibility = shortcutNum !== null ? 'visible' : 'hidden';
+  if (isSearchBadge && shortcutNum !== null) badge.classList.add('search-badge');
 
   const code = document.createElement('span');
   code.className = 'locale-code';
@@ -347,8 +349,16 @@ resolveActiveTab(tab => {
       return;
     }
 
-    // 1–9 picks favourites when search is empty
+    // Shift+1–9 selects Nth search result when search has text
     const digit = parseInt(e.key);
+    if (e.shiftKey && !isNaN(digit) && digit >= 1 && digit <= 9 && searchEl.value !== '') {
+      e.preventDefault();
+      const target = items[digit - 1];
+      if (target) navigateTo(target.dataset.code);
+      return;
+    }
+
+    // 1–9 picks favourites when search is empty
     if (!isNaN(digit) && digit >= 1 && digit <= 9 && searchEl.value === '') {
       loadFavourites(favs => {
         const code = favs[digit - 1];
