@@ -52,10 +52,48 @@ It's a productivity tool for quickly switching the current stressless.com page b
 Switching locale keeps the rest of the URL exactly the same and replaces only the locale segment, then loads the new URL in the same tab.
 
 LOCALES
-There are 31 locales. Each has a group (shown as a heading in the list), a code (the URL segment) and a display name. Keep them in one array in the code so adding a new locale only means adding one entry. Here is the full list:
-[PASTE THE LOCALES LIST HERE: group, code, name for each one]
-Example of the format, for the French group:
-  Group "🇫🇷 French": France, Canada, Belgium, Switzerland (each with its own locale code)
+There are 32 locales. Each has a group (shown as a heading in the list), a code (the URL segment) and a display name. Keep them in one array in the code so adding a new locale only means adding one entry. Here is the full list:
+(format: code - display name, listed under each group in the order they should appear)
+  Group "🌐 Global":
+    global - Global
+  Group "🌍 English":
+    en - United States
+    en-au - Australia
+    en-ca - Canada
+    en-gb - United Kingdom
+    en-hk - Hong Kong
+    en-ie - Ireland
+    en-nz - New Zealand
+    en-sg - Singapore
+    en-tt - Trinidad & Tobago
+  Group "🇩🇪 German":
+    de-de - Germany
+    de-at - Austria
+    de-ch - Switzerland
+  Group "🇫🇷 French":
+    fr-fr - France
+    fr-ca - Canada
+    fr-be - Belgium
+    fr-ch - Switzerland
+  Group "🇪🇸 Spanish":
+    es-es - Spain
+    es-mx - Mexico
+  Group "🌐 Other":
+    it-it - Italy
+    nl-nl - Netherlands
+    nl-be - Belgium – Flemish
+    pt-br - Brazil
+  Group "🌍 Nordics":
+    nb-no - Norway
+    sv-se - Sweden
+    fi-fi - Finland
+    da-dk - Denmark
+  Group "🌏 APAC":
+    ja-jp - Japan
+    ko-kr - South Korea
+    zh-tw - Taiwan
+    th-th - Thailand
+    tr-tr - Turkey
 
 POPUP LAYOUT
 1. Header: shows the locale detected from the current tab's URL (its code and name), or "(none)" if the page isn't a stressless.com page with a recognised locale.
