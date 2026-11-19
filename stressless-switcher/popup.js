@@ -150,10 +150,10 @@ function makeLocaleItem(locale, activeCode, favs, shortcutNum, isSearchBadge = f
   item.className = 'locale-item' + (isActive ? ' active' : '');
   item.dataset.code = locale.code;
 
-  // shortcut badge (only in favourites section, 1-indexed)
+  // shortcut badge (favourites when search is empty, search results otherwise; 1-indexed)
   const badge = document.createElement('span');
   badge.className = 'shortcut-badge';
-  badge.textContent = shortcutNum !== null ? (isSearchBadge ? `⇧${shortcutNum}` : shortcutNum) : '';
+  badge.textContent = shortcutNum !== null ? shortcutNum : '';
   badge.style.visibility = shortcutNum !== null ? 'visible' : 'hidden';
   if (isSearchBadge && shortcutNum !== null) badge.classList.add('search-badge');
 
@@ -349,23 +349,23 @@ resolveActiveTab(tab => {
       return;
     }
 
-    // Shift+1–9 selects Nth search result when search has text
-    // e.key is '!','@','#'… when shift is held, so use e.code instead
-    const codeDigit = e.code.startsWith('Digit') ? parseInt(e.code.slice(5)) : NaN;
-    if (e.shiftKey && !isNaN(codeDigit) && codeDigit >= 1 && codeDigit <= 9 && searchEl.value !== '') {
+    // 1–9 (with or without Shift) picks the Nth search result when the search has text,
+    // or the Nth favourite when the search is empty. Locale codes/names contain no digits,
+    // so digits are never needed as search input.
+    // e.key is '!','@','#'… when shift is held, so read the digit from e.code instead
+    const m = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
+    const digit = m ? parseInt(m[1]) : NaN;
+    if (!isNaN(digit) && !e.ctrlKey && !e.metaKey && !e.altKey) {
       e.preventDefault();
-      const target = items[codeDigit - 1];
-      if (target) navigateTo(target.dataset.code);
-      return;
-    }
-
-    // 1–9 picks favourites when search is empty
-    const digit = parseInt(e.key);
-    if (!isNaN(digit) && digit >= 1 && digit <= 9 && searchEl.value === '') {
-      loadFavourites(favs => {
-        const code = favs[digit - 1];
-        if (code) navigateTo(code);
-      });
+      if (searchEl.value !== '') {
+        const target = items[digit - 1];
+        if (target) navigateTo(target.dataset.code);
+      } else {
+        loadFavourites(favs => {
+          const code = favs[digit - 1];
+          if (code) navigateTo(code);
+        });
+      }
       return;
     }
 

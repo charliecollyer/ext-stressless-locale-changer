@@ -22,6 +22,7 @@ A Chrome extension for quickly switching locales on stressless.com and shop.stre
 | Cycle through results | `Tab` / `Shift+Tab` or `↑↓` |
 | Go to locale | `Enter` or click any row |
 | Jump to favourite | `1`–`9` (when search box is empty) |
+| Jump to search result | `1`–`9` (while typing — picks the Nth result shown) |
 | Close without switching | `Esc` |
 
 ### Global shortcut (optional)
