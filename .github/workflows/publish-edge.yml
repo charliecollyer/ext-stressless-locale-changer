@@ -1,0 +1,100 @@
+# Publishes the extension to the Microsoft Edge Add-ons store when a version tag (e.g. v4.4) is pushed.
+# Setup and release steps: docs/PUBLISHING.md
+name: Publish to Edge Add-ons
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Run tests
+        run: |
+          npm ci
+          npm test
+
+      - name: Check tag matches manifest version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          MANIFEST_VERSION=$(jq -r .version stressless-switcher/manifest.json)
+          if [ "$TAG_VERSION" != "$MANIFEST_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match manifest.json version $MANIFEST_VERSION. Update the version in manifest.json, or tag v$MANIFEST_VERSION instead."
+            exit 1
+          fi
+
+      - name: Zip extension
+        run: |
+          cd stressless-switcher
+          zip -r ../extension.zip . -x '.*'
+          unzip -l ../extension.zip
+
+      - name: Upload to Edge Add-ons and submit for review
+        env:
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          for name in EDGE_PRODUCT_ID EDGE_CLIENT_ID EDGE_API_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Repository secret $name is not set. See docs/PUBLISHING.md."
+              exit 1
+            fi
+          done
+
+          API="https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID"
+          AUTH=(-H "Authorization: ApiKey $EDGE_API_KEY" -H "X-ClientID: $EDGE_CLIENT_ID")
+
+          # Sends a request that should return 202, and prints the operation ID from the Location header
+          start_operation() {
+            local code location
+            code=$(curl -sS -o response.txt -D headers.txt -w '%{http_code}' "${AUTH[@]}" "$@")
+            if [ "$code" != "202" ]; then
+              echo "::error::Edge API returned HTTP $code" >&2
+              cat response.txt >&2
+              exit 1
+            fi
+            location=$(grep -i '^location:' headers.txt | tail -1 | cut -d' ' -f2- | tr -d '\r')
+            echo "${location##*/}"
+          }
+
+          # Checks an operation every 10 seconds until it succeeds or fails (gives up after 5 minutes)
+          wait_for() {
+            local url="$1" status
+            for _ in $(seq 1 30); do
+              curl -sS -o status.json "${AUTH[@]}" "$url"
+              status=$(jq -r .status status.json)
+              echo "Status: $status"
+              case "$status" in
+                Succeeded) jq -r .message status.json; return 0 ;;
+                InProgress) sleep 10 ;;
+                *) echo "::error::Edge API operation did not succeed"; jq . status.json >&2; exit 1 ;;
+              esac
+            done
+            echo "::error::Timed out waiting for the Edge API"
+            exit 1
+          }
+
+          echo "Uploading package..."
+          OP=$(start_operation -X POST -H "Content-Type: application/zip" \
+            --data-binary @extension.zip "$API/submissions/draft/package")
+          wait_for "$API/submissions/draft/package/operations/$OP"
+
+          echo "Submitting for review..."
+          NOTES="Automated release $GITHUB_REF_NAME from GitHub Actions."
+          OP=$(start_operation -X POST -H "Content-Type: application/json" \
+            -d "$(jq -n --arg notes "$NOTES" '{notes: $notes}')" "$API/submissions")
+          wait_for "$API/submissions/operations/$OP"
+
+          echo "Submitted. Microsoft review can take up to 7 business days."

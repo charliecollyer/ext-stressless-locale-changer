@@ -14,6 +14,8 @@ npx jest --testNamePattern="replaces existing locale segment"
 
 Tests require `npm install` on first run (installs Jest). There is no build step — the extension is loaded unpacked directly from `stressless-switcher/`.
 
+**Releasing:** pushing a `v*` tag runs `.github/workflows/publish-edge.yml`, which tests, checks the tag matches `manifest.json`'s `version`, zips `stressless-switcher/` and submits it to the Edge Add-ons store via the v1.1 publishing API. Credentials are the repo secrets `EDGE_PRODUCT_ID`, `EDGE_CLIENT_ID`, `EDGE_API_KEY`. Setup and release steps for the user: `docs/PUBLISHING.md`.
+
 ## Architecture
 
 This is a Manifest V3 Chrome extension. All UI logic lives in two files:
