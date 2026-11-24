@@ -12,6 +12,10 @@ A Chrome extension for quickly switching locales on stressless.com and shop.stre
 4. **Load the extension** — Click "Load unpacked" and select the unzipped `stressless-switcher` folder.
 5. **Pin it** — Click the puzzle piece 🧩 in Chrome's toolbar and pin the extension for easy one-click access.
 
+## Publishing
+
+Updates are published to the Microsoft Edge Add-ons store as a hidden listing by pushing a version tag. See [docs/PUBLISHING.md](docs/PUBLISHING.md) for the one-time setup and release steps.
+
 ## Keyboard Shortcuts
 
 | Action | Shortcut / How |

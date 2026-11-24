@@ -2,7 +2,7 @@
 
 ## Publish automatically to the Microsoft Edge Add-ons store
 
-**Status:** not started
+**Status:** workflow and guide written. Still to do (by me): steps 1–5 of `docs/PUBLISHING.md` (Partner Center account, first manual submission, hidden listing, API credentials, GitHub secrets), then a first test release with a version tag. Remove this section once a tagged release has gone through.
 
 Set up automatic publishing of this extension to the Microsoft Edge Add-ons store using a GitHub Action.
 
@@ -15,21 +15,21 @@ Set up automatic publishing of this extension to the Microsoft Edge Add-ons stor
 ### What I want
 
 1. **A GitHub Actions workflow** in `.github/workflows/` that:
-   - [ ] runs when I push a version tag (e.g. `v1.2.0`)
-   - [ ] runs `npm test` first and stops if the tests fail
-   - [ ] checks that the tag matches the `"version"` in `stressless-switcher/manifest.json`
-   - [ ] zips the contents of `stressless-switcher/` (with `manifest.json` at the root of the zip)
-   - [ ] uploads the zip with the Microsoft Edge Add-ons publishing API and submits it for review
-   - [ ] reads all credentials from GitHub repository secrets, never hard-coded
+   - [x] runs when I push a version tag (e.g. `v1.2.0`)
+   - [x] runs `npm test` first and stops if the tests fail
+   - [x] checks that the tag matches the `"version"` in `stressless-switcher/manifest.json`
+   - [x] zips the contents of `stressless-switcher/` (with `manifest.json` at the root of the zip)
+   - [x] uploads the zip with the Microsoft Edge Add-ons publishing API and submits it for review
+   - [x] reads all credentials from GitHub repository secrets, never hard-coded
 
 2. **Check the API docs first.** Before writing the workflow, check the current Microsoft Edge Add-ons publishing API docs so the endpoints and auth method are up to date. Tell me if anything has changed from what you expected.
 
 3. **A short step-by-step guide** for someone non-technical, in a new file `docs/PUBLISHING.md`, covering:
-   - [ ] registering a free developer account in Microsoft Partner Center
-   - [ ] doing the first submission by hand, if the API can only update an existing listing
-   - [ ] setting the listing to hidden
-   - [ ] getting the API credentials and adding them as GitHub secrets (with the exact secret names the workflow uses)
-   - [ ] how to release an update: bump the version in `manifest.json`, commit, tag, push
+   - [x] registering a free developer account in Microsoft Partner Center
+   - [x] doing the first submission by hand, if the API can only update an existing listing
+   - [x] setting the listing to hidden
+   - [x] getting the API credentials and adding them as GitHub secrets (with the exact secret names the workflow uses)
+   - [x] how to release an update: bump the version in `manifest.json`, commit, tag, push
 
 4. **README link.** Add a link to the new guide in `README.md`.
 
